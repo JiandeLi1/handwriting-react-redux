@@ -25,22 +25,21 @@ export const store = {
     }
   }
 }
-export const connect = ( selector )=>(Component) => {
+export const connect = ( selector, dispatchSelector )=>(Component) => {
   return (props) => {
     //Hook need to work inside the component
+    const dispatch = (action) => {
+      setState(reducer(state, action))
+    }
     const { state, setState } = useContext(appContext)
     const [, update] = useState({})
-    const data = selector ? selector(state) : {state:state}
+    const data = selector ? selector(state) : { state: state }
+    const dispatcher = dispatchSelector ? dispatchSelector(dispatch) : {dispatch}
      useEffect(() =>  store.subscribe(() => {
          const newData = selector ? selector(store.state) : { state: store.state }
          if(change(data,newData)) update({})
        }), [selector]) 
-      
-    const dispatch = (action) => {
-      setState(reducer(state, action))
-    
-    }
-    return <Component dispatch={dispatch} {...data} {...props}/>
+    return <Component {...dispatcher} {...data} {...props}/>
   }
 }
 const reducer = (state, { type, payload }) => {

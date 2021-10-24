@@ -1,6 +1,7 @@
 import './App.css';
-import React, { useState, useContext, useEffect } from 'react'
-import { store, connect, appContext } from './redux'
+import React from 'react'
+import { store, appContext } from './redux'
+import { connectToUser } from './Connect/userConnect'
 
 export default function App() {
   return (
@@ -14,24 +15,24 @@ export default function App() {
 }
 
 const A = () => <section>A <User /></section>
-const B = () => <section>B <UserModifier> xxx</UserModifier></section>
+const B = () => <section>B <UserModifier>xxx</UserModifier></section>
 const C = () => <section>C</section>
-const User = connect(state => { return { user: state.user } })(({ user }) => {
+
+
+
+const User = connectToUser(({ user }) => {
   return <div>{ user.name }</div>
- 
 })
 
-
-
-
-const UserModifier = connect()(({ dispatch, state, children }) => {
+const UserModifier = connectToUser(({ updateUser, user, children }) => {
   const change = (e) => {
-     dispatch({ type: 'updateUser', payload:{ name: e.target.value }})
+    updateUser({ name: e.target.value })
+    console.log(updateUser)
   }
   return (
     <div>
       { children }
-      <input value={state.user.name } onChange= { change }></input>
+      <input value={ user.name } onChange= { change }></input>
     </div>
   )
 })
